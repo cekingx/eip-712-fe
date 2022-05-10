@@ -1,16 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>test 2</title>
 </head>
+
 <body>
   <div class="container">
-    <button class="btn btn-primary">Button</button>
+    <header>
+      <div id="logo-container">
+        <h1 id="logo-text" class="text-center">
+          EIP-712 Signature
+        </h1>
+      </div>
+    </header>
+    <section>
+      <h3 class="card-title">
+        Status
+      </h3>
+      <div class="row">
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <p class="info-text alert alert-primary">
+            Network: <span id="network"></span>
+          </p>
+        </div>
+
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <p class="info-text alert alert-secondary">
+            ChainId: <span id="chainId"></span>
+          </p>
+        </div>
+
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <p class="info-text alert alert-success">
+            Accounts: <span id="accounts"></span>
+          </p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="row d-flex justify-content-center">
+        <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">
+                Basic Actions
+              </h4>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="connectButton" disabled>
+                Connect
+              </button>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="getAccounts">
+                eth_accounts
+              </button>
+
+              <p class="info-text alert alert-secondary">
+                eth_accounts result: <span id="getAccountsResult"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
-  
+
   <script src="bundle.js"></script>
 </body>
+
 </html>
