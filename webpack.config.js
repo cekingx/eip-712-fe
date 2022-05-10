@@ -15,6 +15,17 @@ module.exports = {
     },
     port: 9000
   },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+      }
+    ]
+  },
   plugins: [
     new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
     new CopyPlugin({
