@@ -151,25 +151,9 @@ const initialize = async () => {
 
     ethereum.on('chainChanged', (chain) => {
       handleNewChain(chain);
-      ethereum
-        .request({
-          method: 'eth_getBlockByNumber',
-          params: ['latest', false],
-        })
-        .then((block) => {
-          handleEIP1559Support(block.baseFeePerGas !== undefined);
-        });
     });
     ethereum.on('chainChanged', handleNewNetwork);
     ethereum.on('accountsChanged', (newAccounts) => {
-      ethereum
-        .request({
-          method: 'eth_getBlockByNumber',
-          params: ['latest', false],
-        })
-        .then((block) => {
-          handleEIP1559Support(block.baseFeePerGas !== undefined);
-        });
       handleNewAccounts(newAccounts);
     });
 
