@@ -42,6 +42,14 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
-    })
-  ]
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+  ],
+  resolve: {
+    fallback: {
+      "stream": require.resolve("stream-browserify")
+    }
+  }
 }

@@ -2,6 +2,7 @@ import MetamaskOnboarding from '@metamask/onboarding';
 import {
   ethers
 } from 'ethers';
+import { recoverPersonalSignature } from 'eth-sig-util'
 
 let ethersProvider;
 const {
@@ -51,7 +52,7 @@ const initialize = async () => {
 
   const accountButtons = [
     personalSign,
-    // personalSignVerify,
+    personalSignVerify,
   ];
 
   const isMetaMaskConnected = () => accounts && accounts.length > 0;
@@ -111,10 +112,11 @@ const initialize = async () => {
   }
 
   personalSign.onclick = async () => {
-    const exampleMessage = `check-in using tokenId 1`;
+    const exampleMessage = `Check-in using tokenId 1`;
     try {
       const from = accounts[0];
-      const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`;
+      const signedMessage = `${accounts[0]}1`;
+      const msg = `0x${Buffer.from(signedMessage, 'utf8').toString('hex')}`;
       const sign = await ethereum.request({
         method: 'personal_sign',
         params: [msg, from, 'Some-secret2022:)'],
@@ -124,6 +126,45 @@ const initialize = async () => {
     } catch (err) {
       console.error(err);
       personalSign.innerHTML = `Error: ${err.message}`;
+    }
+  };
+
+  personalSignVerify.onclick = async () => {
+    const exampleMessage = 'Check-in using tokenId 1';
+    try {
+      const from = accounts[0];
+      const signedMessage = `${accounts[0]}1`;
+      const msg = `0x${Buffer.from(signedMessage, 'utf8').toString('hex')}`;
+      const sign = personalSignResult.innerHTML;
+      const recoveredAddr = recoverPersonalSignature({
+        data: msg,
+        sig: sign,
+      });
+      if (recoveredAddr === from) {
+        console.log(`SigUtil Successfully verified signer as ${recoveredAddr}`);
+        personalSignVerifySigUtilResult.innerHTML = recoveredAddr;
+      } else {
+        console.log(
+          `SigUtil Failed to verify signer when comparing ${recoveredAddr} to ${from}`,
+        );
+        console.log(`Failed comparing ${recoveredAddr} to ${from}`);
+      }
+      const ecRecoverAddr = await ethereum.request({
+        method: 'personal_ecRecover',
+        params: [msg, sign],
+      });
+      if (ecRecoverAddr === from) {
+        console.log(`Successfully ecRecovered signer as ${ecRecoverAddr}`);
+        personalSignVerifyECRecoverResult.innerHTML = ecRecoverAddr;
+      } else {
+        console.log(
+          `Failed to verify signer when comparing ${ecRecoverAddr} to ${from}`,
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      personalSignVerifySigUtilResult.innerHTML = `Error: ${err.message}`;
+      personalSignVerifyECRecoverResult.innerHTML = `Error: ${err.message}`;
     }
   };
 
