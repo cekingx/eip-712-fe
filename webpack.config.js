@@ -1,5 +1,6 @@
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/js/app.js',
@@ -38,6 +39,9 @@ module.exports = {
           }
         }
       ]
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
     })
   ]
 }

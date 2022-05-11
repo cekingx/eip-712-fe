@@ -66,6 +66,40 @@
         </div>
       </div>
     </section>
+    <section class="mt-3">
+      <div class="row">
+        <div class="col-6">
+          <div class="card">
+            <div class="card-body">
+              <h4>
+                Personal Sign
+              </h4>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="personalSign" disabled>
+                Sign
+              </button>
+
+              <p class="info-text alert alert-warning">
+                Result: <span id="personalSignResult"></span>
+              </p>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="personalSignVerify" disabled>
+                Verify
+              </button>
+
+              <p class="info-text alert alert-warning">
+                eth-sig-util recovery result:
+                <span id="personalSignVerifySigUtilResult"></span>
+              </p>
+              <p class="info-text alert alert-warning">
+                personal_ecRecover result:
+                <span id="personalSignVerifyECRecoverResult"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script src="bundle.js"></script>

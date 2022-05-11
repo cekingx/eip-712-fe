@@ -21,7 +21,14 @@ const getAccountsButton = document.getElementById('getAccounts');
 const getAccountsResults = document.getElementById('getAccountsResult');
 
 const personalSign = document.getElementById('personalSign');
+const personalSignResult = document.getElementById('personalSignResult');
 const personalSignVerify = document.getElementById('personalSignVerify');
+const personalSignVerifySigUtilResult = document.getElementById(
+  'personalSignVerifySigUtilResult',
+);
+const personalSignVerifyECRecoverResult = document.getElementById(
+  'personalSignVerifyECRecoverResult',
+);
 
 const initialize = async () => {
   try {
@@ -43,7 +50,7 @@ const initialize = async () => {
   let accountButtonsInitialized = false;
 
   const accountButtons = [
-    // personalSign,
+    personalSign,
     // personalSignVerify,
   ];
 
@@ -67,7 +74,7 @@ const initialize = async () => {
         button.disabled = true;
       }
     } else {
-      // personalSign.disabled = false;
+      personalSign.disabled = false;
     }
 
     if (isMetaMaskConnected()) {
@@ -102,6 +109,23 @@ const initialize = async () => {
       }
     };
   }
+
+  personalSign.onclick = async () => {
+    const exampleMessage = `check-in using tokenId 1`;
+    try {
+      const from = accounts[0];
+      const msg = `0x${Buffer.from(exampleMessage, 'utf8').toString('hex')}`;
+      const sign = await ethereum.request({
+        method: 'personal_sign',
+        params: [msg, from, 'Some-secret2022:)'],
+      });
+      personalSignResult.innerHTML = sign;
+      personalSignVerify.disabled = false;
+    } catch (err) {
+      console.error(err);
+      personalSign.innerHTML = `Error: ${err.message}`;
+    }
+  };
 
   function handleNewAccounts(newAccounts) {
     accounts = newAccounts;
