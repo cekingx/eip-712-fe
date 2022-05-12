@@ -2,7 +2,8 @@ import MetamaskOnboarding from '@metamask/onboarding';
 import {
   ethers
 } from 'ethers';
-import { recoverPersonalSignature } from 'eth-sig-util'
+import { recoverPersonalSignature, recoverTypedSignature_v4 as recoverTypedSignatureV4 } from 'eth-sig-util'
+import { toChecksumAddress } from 'ethereumjs-util'
 
 let ethersProvider;
 const {
@@ -21,6 +22,7 @@ const onboardButton = document.getElementById('connectButton');
 const getAccountsButton = document.getElementById('getAccounts');
 const getAccountsResults = document.getElementById('getAccountsResult');
 
+// Personal
 const personalSign = document.getElementById('personalSign');
 const personalSignResult = document.getElementById('personalSignResult');
 const personalSignVerify = document.getElementById('personalSignVerify');
@@ -29,6 +31,14 @@ const personalSignVerifySigUtilResult = document.getElementById(
 );
 const personalSignVerifyECRecoverResult = document.getElementById(
   'personalSignVerifyECRecoverResult',
+);
+
+// Signed V4
+const signTypedDataV4 = document.getElementById('signTypedDataV4');
+const signTypedDataV4Result = document.getElementById('signTypedDataV4Result');
+const signTypedDataV4Verify = document.getElementById('signTypedDataV4Verify');
+const signTypedDataV4VerifyResult = document.getElementById(
+  'signTypedDataV4VerifyResult',
 );
 
 const initialize = async () => {
@@ -53,6 +63,8 @@ const initialize = async () => {
   const accountButtons = [
     personalSign,
     personalSignVerify,
+    signTypedDataV4,
+    signTypedDataV4Verify
   ];
 
   const isMetaMaskConnected = () => accounts && accounts.length > 0;
@@ -76,6 +88,7 @@ const initialize = async () => {
       }
     } else {
       personalSign.disabled = false;
+      signTypedDataV4.disabled = false;
     }
 
     if (isMetaMaskConnected()) {
@@ -165,6 +178,153 @@ const initialize = async () => {
       console.error(err);
       personalSignVerifySigUtilResult.innerHTML = `Error: ${err.message}`;
       personalSignVerifyECRecoverResult.innerHTML = `Error: ${err.message}`;
+    }
+  };
+
+  /**
+   * Sign Typed Data V4
+   */
+  signTypedDataV4.onclick = async () => {
+    const networkId = parseInt(networkDiv.innerHTML, 10);
+    const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
+    const msgParams = {
+      domain: {
+        chainId: chainId.toString(),
+        name: 'Ether Mail',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        version: '1',
+      },
+      message: {
+        contents: 'Hello, Bob!',
+        from: {
+          name: 'Cow',
+          wallets: [
+            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+            '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+          ],
+        },
+        to: [
+          {
+            name: 'Bob',
+            wallets: [
+              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
+              '0xB0B0b0b0b0b0B000000000000000000000000000',
+            ],
+          },
+        ],
+      },
+      primaryType: 'Mail',
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        Group: [
+          { name: 'name', type: 'string' },
+          { name: 'members', type: 'Person[]' },
+        ],
+        Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person[]' },
+          { name: 'contents', type: 'string' },
+        ],
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallets', type: 'address[]' },
+        ],
+      },
+    };
+    try {
+      const from = accounts[0];
+      const sign = await ethereum.request({
+        method: 'eth_signTypedData_v4',
+        params: [from, JSON.stringify(msgParams)],
+      });
+      signTypedDataV4Result.innerHTML = sign;
+      signTypedDataV4Verify.disabled = false;
+    } catch (err) {
+      console.error(err);
+      signTypedDataV4Result.innerHTML = `Error: ${err.message}`;
+    }
+  };
+
+  /**
+   *  Sign Typed Data V4 Verification
+   */
+  signTypedDataV4Verify.onclick = async () => {
+    const networkId = parseInt(networkDiv.innerHTML, 10);
+    const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
+    const msgParams = {
+      domain: {
+        chainId,
+        name: 'Ether Mail',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        version: '1',
+      },
+      message: {
+        contents: 'Hello, Bob!',
+        from: {
+          name: 'Cow',
+          wallets: [
+            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+            '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
+          ],
+        },
+        to: [
+          {
+            name: 'Bob',
+            wallets: [
+              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
+              '0xB0B0b0b0b0b0B000000000000000000000000000',
+            ],
+          },
+        ],
+      },
+      primaryType: 'Mail',
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        Group: [
+          { name: 'name', type: 'string' },
+          { name: 'members', type: 'Person[]' },
+        ],
+        Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person[]' },
+          { name: 'contents', type: 'string' },
+        ],
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallets', type: 'address[]' },
+        ],
+      },
+    };
+    try {
+      const from = accounts[0];
+      const sign = signTypedDataV4Result.innerHTML;
+      const recoveredAddr = recoverTypedSignatureV4({
+        data: msgParams,
+        sig: sign,
+      });
+      if (toChecksumAddress(recoveredAddr) === toChecksumAddress(from)) {
+        console.log(`Successfully verified signer as ${recoveredAddr}`);
+        signTypedDataV4VerifyResult.innerHTML = recoveredAddr;
+      } else {
+        console.log(
+          `Failed to verify signer when comparing ${recoveredAddr} to ${from}`,
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      signTypedDataV4VerifyResult.innerHTML = `Error: ${err.message}`;
     }
   };
 

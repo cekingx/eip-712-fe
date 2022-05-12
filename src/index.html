@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>test 2</title>
+  <title>EIP-712</title>
 </head>
 
 <body>
@@ -94,6 +94,33 @@
               <p class="info-text alert alert-warning">
                 personal_ecRecover result:
                 <span id="personalSignVerifyECRecoverResult"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card full-width">
+            <div class="card-body">
+              <h4>
+                Sign Typed Data V4
+              </h4>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV4" disabled>
+                Sign
+              </button>
+
+              <p class="info-text alert alert-warning">
+                Result:
+                <span id="signTypedDataV4Result"></span>
+              </p>
+
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="signTypedDataV4Verify" disabled>
+                Verify
+              </button>
+
+              <p class="info-text alert alert-warning">
+                Recovery result:
+                <span id="signTypedDataV4VerifyResult"></span>
               </p>
             </div>
           </div>
