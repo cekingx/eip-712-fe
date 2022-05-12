@@ -22,17 +22,6 @@ const onboardButton = document.getElementById('connectButton');
 const getAccountsButton = document.getElementById('getAccounts');
 const getAccountsResults = document.getElementById('getAccountsResult');
 
-// Personal
-const personalSign = document.getElementById('personalSign');
-const personalSignResult = document.getElementById('personalSignResult');
-const personalSignVerify = document.getElementById('personalSignVerify');
-const personalSignVerifySigUtilResult = document.getElementById(
-  'personalSignVerifySigUtilResult',
-);
-const personalSignVerifyECRecoverResult = document.getElementById(
-  'personalSignVerifyECRecoverResult',
-);
-
 // Signed V4
 const signTypedDataV4 = document.getElementById('signTypedDataV4');
 const signTypedDataV4Result = document.getElementById('signTypedDataV4Result');
@@ -61,8 +50,6 @@ const initialize = async () => {
   let accountButtonsInitialized = false;
 
   const accountButtons = [
-    personalSign,
-    personalSignVerify,
     signTypedDataV4,
     signTypedDataV4Verify
   ];
@@ -87,7 +74,6 @@ const initialize = async () => {
         button.disabled = true;
       }
     } else {
-      personalSign.disabled = false;
       signTypedDataV4.disabled = false;
     }
 
@@ -124,63 +110,6 @@ const initialize = async () => {
     };
   }
 
-  personalSign.onclick = async () => {
-    const exampleMessage = `Check-in using tokenId 1`;
-    try {
-      const from = accounts[0];
-      const signedMessage = `${accounts[0]}1`;
-      const msg = `0x${Buffer.from(signedMessage, 'utf8').toString('hex')}`;
-      const sign = await ethereum.request({
-        method: 'personal_sign',
-        params: [msg, from, 'Some-secret2022:)'],
-      });
-      personalSignResult.innerHTML = sign;
-      personalSignVerify.disabled = false;
-    } catch (err) {
-      console.error(err);
-      personalSign.innerHTML = `Error: ${err.message}`;
-    }
-  };
-
-  personalSignVerify.onclick = async () => {
-    const exampleMessage = 'Check-in using tokenId 1';
-    try {
-      const from = accounts[0];
-      const signedMessage = `${accounts[0]}1`;
-      const msg = `0x${Buffer.from(signedMessage, 'utf8').toString('hex')}`;
-      const sign = personalSignResult.innerHTML;
-      const recoveredAddr = recoverPersonalSignature({
-        data: msg,
-        sig: sign,
-      });
-      if (recoveredAddr === from) {
-        console.log(`SigUtil Successfully verified signer as ${recoveredAddr}`);
-        personalSignVerifySigUtilResult.innerHTML = recoveredAddr;
-      } else {
-        console.log(
-          `SigUtil Failed to verify signer when comparing ${recoveredAddr} to ${from}`,
-        );
-        console.log(`Failed comparing ${recoveredAddr} to ${from}`);
-      }
-      const ecRecoverAddr = await ethereum.request({
-        method: 'personal_ecRecover',
-        params: [msg, sign],
-      });
-      if (ecRecoverAddr === from) {
-        console.log(`Successfully ecRecovered signer as ${ecRecoverAddr}`);
-        personalSignVerifyECRecoverResult.innerHTML = ecRecoverAddr;
-      } else {
-        console.log(
-          `Failed to verify signer when comparing ${ecRecoverAddr} to ${from}`,
-        );
-      }
-    } catch (err) {
-      console.error(err);
-      personalSignVerifySigUtilResult.innerHTML = `Error: ${err.message}`;
-      personalSignVerifyECRecoverResult.innerHTML = `Error: ${err.message}`;
-    }
-  };
-
   /**
    * Sign Typed Data V4
    */
@@ -190,31 +119,16 @@ const initialize = async () => {
     const msgParams = {
       domain: {
         chainId: chainId.toString(),
-        name: 'Ether Mail',
+        name: 'Eseats',
         verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
         version: '1',
       },
       message: {
-        contents: 'Hello, Bob!',
-        from: {
-          name: 'Cow',
-          wallets: [
-            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-            '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-          ],
-        },
-        to: [
-          {
-            name: 'Bob',
-            wallets: [
-              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
-              '0xB0B0b0b0b0b0B000000000000000000000000000',
-            ],
-          },
-        ],
+        event: 'Webinar Eseats',
+        tokenId: 1,
+        attendee: accounts[0]
       },
-      primaryType: 'Mail',
+      primaryType: 'CheckIn',
       types: {
         EIP712Domain: [
           { name: 'name', type: 'string' },
@@ -222,18 +136,10 @@ const initialize = async () => {
           { name: 'chainId', type: 'uint256' },
           { name: 'verifyingContract', type: 'address' },
         ],
-        Group: [
-          { name: 'name', type: 'string' },
-          { name: 'members', type: 'Person[]' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person[]' },
-          { name: 'contents', type: 'string' },
-        ],
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallets', type: 'address[]' },
+        CheckIn: [
+          { name: 'event', type: 'string' },
+          { name: 'tokenId', type: 'uint256' },
+          { name: 'attendee', type: 'address' }
         ],
       },
     };
@@ -259,32 +165,17 @@ const initialize = async () => {
     const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
     const msgParams = {
       domain: {
-        chainId,
-        name: 'Ether Mail',
+        chainId: chainId.toString(),
+        name: 'Eseats',
         verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
         version: '1',
       },
       message: {
-        contents: 'Hello, Bob!',
-        from: {
-          name: 'Cow',
-          wallets: [
-            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-            '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-          ],
-        },
-        to: [
-          {
-            name: 'Bob',
-            wallets: [
-              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
-              '0xB0B0b0b0b0b0B000000000000000000000000000',
-            ],
-          },
-        ],
+        event: 'Webinar Eseats',
+        tokenId: 1,
+        attendee: accounts[0]
       },
-      primaryType: 'Mail',
+      primaryType: 'CheckIn',
       types: {
         EIP712Domain: [
           { name: 'name', type: 'string' },
@@ -292,18 +183,10 @@ const initialize = async () => {
           { name: 'chainId', type: 'uint256' },
           { name: 'verifyingContract', type: 'address' },
         ],
-        Group: [
-          { name: 'name', type: 'string' },
-          { name: 'members', type: 'Person[]' },
-        ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person[]' },
-          { name: 'contents', type: 'string' },
-        ],
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallets', type: 'address[]' },
+        CheckIn: [
+          { name: 'event', type: 'string' },
+          { name: 'tokenId', type: 'uint256' },
+          { name: 'attendee', type: 'address' }
         ],
       },
     };
