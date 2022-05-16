@@ -120,7 +120,7 @@ const initialize = async () => {
       domain: {
         chainId: chainId.toString(),
         name: 'Eseats',
-        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        verifyingContract: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
         version: '1',
       },
       message: {
