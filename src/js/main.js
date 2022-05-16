@@ -116,17 +116,16 @@ const initialize = async () => {
   signTypedDataV4.onclick = async () => {
     const networkId = parseInt(networkDiv.innerHTML, 10);
     const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
+    const verifyingContract = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
     const msgParams = {
       domain: {
         chainId: chainId.toString(),
         name: 'Eseats',
-        verifyingContract: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+        verifyingContract: verifyingContract,
         version: '1',
       },
       message: {
-        event: 'Webinar Eseats',
-        tokenId: 1,
-        attendee: accounts[0]
+        tokenId: 1
       },
       primaryType: 'CheckIn',
       types: {
@@ -137,9 +136,7 @@ const initialize = async () => {
           { name: 'verifyingContract', type: 'address' },
         ],
         CheckIn: [
-          { name: 'event', type: 'string' },
           { name: 'tokenId', type: 'uint256' },
-          { name: 'attendee', type: 'address' }
         ],
       },
     };
@@ -163,17 +160,16 @@ const initialize = async () => {
   signTypedDataV4Verify.onclick = async () => {
     const networkId = parseInt(networkDiv.innerHTML, 10);
     const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
+    const verifyingContract = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
     const msgParams = {
       domain: {
         chainId: chainId.toString(),
         name: 'Eseats',
-        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        verifyingContract: verifyingContract.toLowerCase(),
         version: '1',
       },
       message: {
-        event: 'Webinar Eseats',
-        tokenId: 1,
-        attendee: accounts[0]
+        event: 'test',
       },
       primaryType: 'CheckIn',
       types: {
@@ -185,8 +181,6 @@ const initialize = async () => {
         ],
         CheckIn: [
           { name: 'event', type: 'string' },
-          { name: 'tokenId', type: 'uint256' },
-          { name: 'attendee', type: 'address' }
         ],
       },
     };
